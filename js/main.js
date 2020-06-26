@@ -93,6 +93,10 @@ window.addEventListener('DOMContentLoaded', () => {
         {
             return `0${num}`;
         }
+        else  if(num < 0)
+        {
+            return '00';
+        }
         else
         {
             return num;
@@ -139,4 +143,56 @@ window.addEventListener('DOMContentLoaded', () => {
     // запуск ф-и c элементом поиска и датой окончания таймера
     setTimeClock('.timer', deadLine);
     // end Timer
+
+    // Model start
+ 
+    //получаем кнопки
+    let modelBtn = document.querySelectorAll('[data-model]');
+    // получаем сам класс окна
+    let modal = document.querySelector('.modal');
+    // крестил для закрытия
+    let modelClosedBtn = document.querySelector('[data-close]');
+
+    //навешуем события при клике на показать
+    modelBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.classList.add('show');
+            modal.classList.remove('hide')
+            // скрываем скролл для того чтоб не прокручивалась страница
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    // ф-я закрытия модельного окна
+    function closeModal()
+    {
+        modal.classList.add('hide');
+        modal.classList.remove('show');
+        // снимаем запрет на скролл
+        document.body.style.overflow = '';
+    }
+
+    // при клике на крестик закрыть
+    modelClosedBtn.addEventListener('click', () => {
+        closeModal();
+    });
+
+    // при клике на подложку закрываем
+    modal.addEventListener('click', (event) => {
+        // проверяем что клик пользователя был именно на подложку
+        if(event.target == modal)
+        {
+            closeModal();
+        }
+    });
+
+    // при нажатии escape
+    document.addEventListener('keydown', (event) => {
+        // проверяем открыто ли окно
+        if(event.code === 'Escape' && modal.classList.contains('show'))
+        {
+            closeModal();
+        }
+    });
+    //Model end
 });
