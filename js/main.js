@@ -153,14 +153,18 @@ window.addEventListener('DOMContentLoaded', () => {
     // крестил для закрытия
     let modelClosedBtn = document.querySelector('[data-close]');
 
+
+    //ф-я ооткрытия окна
+    function openModal()
+    {
+        modal.classList.add('show');
+        modal.classList.remove('hide')
+        // скрываем скролл для того чтоб не прокручивалась страница
+        document.body.style.overflow = 'hidden';
+    }
     //навешуем события при клике на показать
     modelBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
-            modal.classList.add('show');
-            modal.classList.remove('hide')
-            // скрываем скролл для того чтоб не прокручивалась страница
-            document.body.style.overflow = 'hidden';
-        });
+        btn.addEventListener('click', openModal);
     });
 
     // ф-я закрытия модельного окна
@@ -194,5 +198,23 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }
     });
+
+    // показываем пользователю при входет окно на  3 сек
+    const modalTimerId = setTimeout(openModal, 3000);
+
+    // вычесляем когда пользователь проскролит страницу до низа
+    function showModalScroll()
+    {
+        // проверяем сколько проскролили пользователь
+        if(window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight)
+        {
+            openModal();
+            // удаляем ф-я показа окна при скролее,чтоб 1 раз показалась
+            window.removeEventListener('scroll', showModalScroll);
+        }
+    }
+
+    // показываем пользователю окно,
+    window.addEventListener('scroll', showModalScroll);
     //Model end
 });
