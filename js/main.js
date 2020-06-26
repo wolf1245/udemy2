@@ -214,7 +214,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // показываем пользователю окно,
+    // показываем пользователю окно, при скролле к низу страницы
     window.addEventListener('scroll', showModalScroll);
     //Model end
 });
