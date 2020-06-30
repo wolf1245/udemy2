@@ -217,4 +217,101 @@ window.addEventListener('DOMContentLoaded', () => {
     // показываем пользователю окно, при скролле к низу страницы
     window.addEventListener('scroll', showModalScroll);
     //Model end
+
+    //class Карточек меню start
+    class menuEat
+    {
+        /**
+         * 
+         * @param {string} src - путь картинки
+         * @param {string} alt - название картинки
+         * @param {string} subtitle - название карточки меню
+         * @param {string} descr - описание меню
+         * @param {number} price - цена меню
+         * @param {number} priceDollar - цена доллара
+         * @param {...array} classes - rest оператор
+         * @param {string} parentSelector - элемерты поиска
+         */
+        constructor(src, alt, subtitle, descr, price, parentSelector, ...classes)
+        {
+            this.src = src;
+            this.alt = alt;
+            this.subtitle = subtitle;
+            this.descr = descr;
+            this.price = price;
+            this.parentSelector = document.querySelector(parentSelector);
+            this.classes = classes;
+            this.priceDollar = 26.80;
+            this.transerUAH();
+            this.renderCart();
+        }
+
+        // метод конвертирования цены в гривне в доллар
+        transerUAH()
+        {
+            this.price = Math.floor(this.price * this.priceDollar);
+        }
+
+        // метод создания какрточки
+        renderCart()
+        {
+            let elem = document.createElement('div');
+            // проверяем были ли переданы значения в массив
+            if(this.classes.length === 0)
+            {
+                // если пустой то создаем класс по  умолчанию
+                this.classes  = 'menu__item';
+                // добавляем класс созданому диву
+                elem.classList.add(this.classes);
+            }
+            else
+            {
+                // добавляем каждому элементу
+                this.classes.forEach(className => elem.classList.add(className));
+            }
+            elem.innerHTML = `
+                <img src="${this.src}" alt="${this.alt}">
+                <h3 class="menu__item-subtitle">${this.subtitle}"</h3>
+                <div class="menu__item-descr">${this.descr}</div>
+                <div class="menu__item-divider"></div>
+                <div class="menu__item-price">
+                    <div class="menu__item-cost">Цена:</div>
+                    <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+                </div>
+            `;
+
+            // вставляем после элемента переданого в класс
+            this.parentSelector.append(elem);
+        }
+    }
+
+    // создаем обьект класса и передаем аргументы
+    new menuEat(
+        'img/tabs/vegy.jpg',
+        'vegy',
+        'Меню "Фитнес"',
+        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+        '8.5',
+        ".menu .container",
+        'menu__item'
+    );
+    new menuEat(
+        'img/tabs/elite.jpg',
+        'elite',
+        'Меню “Премиум”',
+        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+        '21',
+        ".menu .container",
+        'menu__item'
+    );
+    new menuEat(
+        'img/tabs/post.jpg',
+        'post',
+        'Меню "Постное"',
+        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+        '16',
+        ".menu .container",
+        'menu__item'
+    );
+    //class Карточек мею end
 });
