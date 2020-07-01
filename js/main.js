@@ -1,3 +1,5 @@
+// строгая типизация
+"use strict"
 // обращение к DOMElementam
 window.addEventListener('DOMContentLoaded', () => {
     // Tabs start
@@ -144,7 +146,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeClock('.timer', deadLine);
     // end Timer
 
-    // Model start
+    // Modal start
  
     //получаем кнопки
     let modelBtn = document.querySelectorAll('[data-model]');
@@ -153,6 +155,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // крестил для закрытия
     let modelClosedBtn = document.querySelector('[data-close]');
 
+    //навешуем события при клике на показать
+    modelBtn.forEach(btn => {
+        btn.addEventListener('click', openModal);
+    });
 
     //ф-я ооткрытия окна
     function openModal()
@@ -161,11 +167,10 @@ window.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('hide')
         // скрываем скролл для того чтоб не прокручивалась страница
         document.body.style.overflow = 'hidden';
+        //
+        clearTimeout(modalTimerId);
     }
-    //навешуем события при клике на показать
-    modelBtn.forEach(btn => {
-        btn.addEventListener('click', openModal);
-    });
+    
 
     // ф-я закрытия модельного окна
     function closeModal()
@@ -177,14 +182,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // при клике на крестик закрыть
-    modelClosedBtn.addEventListener('click', () => {
-        closeModal();
-    });
+    modelClosedBtn.addEventListener('click', closeModal);
 
     // при клике на подложку закрываем
     modal.addEventListener('click', (event) => {
         // проверяем что клик пользователя был именно на подложку
-        if(event.target == modal)
+        if(event.target === modal)
         {
             closeModal();
         }
@@ -216,7 +219,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // показываем пользователю окно, при скролле к низу страницы
     window.addEventListener('scroll', showModalScroll);
-    //Model end
+    //Modal end
 
     //class Карточек меню start
     class menuEat
@@ -352,27 +355,27 @@ window.addEventListener('DOMContentLoaded', () => {
             // создаем обьект JSON
             const request = new XMLHttpRequest();
             // данные отправки
-            request.open('POST', 'server.php');
+            request.open('POST', '/server.php');
             // HTTP заголовок передаем 
             request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             
             // конструктор обьект с формами
             const formData = new FormData(form);
-
+            
             // создаем обьект для превращения Конструктора FormData в JSON формат
-            const object = {};
+            const ob = {};
             
             // перебираем обьект
             formData.forEach(function(value, key){
-                object[key] = value;
+                ob[key] = value;
             });
-
+            
             // кнвертируем в JSON
-            const json = JSON.stringify(object);
+            const jn = JSON.stringify(ob);
 
             // отправляем на сервер
-            request.send(json);
-
+            request.send('jn');
+            
             // проверяем ответ сервера
             request.addEventListener('load', () => {
                 
