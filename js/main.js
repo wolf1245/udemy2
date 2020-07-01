@@ -152,8 +152,6 @@ window.addEventListener('DOMContentLoaded', () => {
     let modelBtn = document.querySelectorAll('[data-model]');
     // получаем сам класс окна
     let modal = document.querySelector('.modal');
-    // крестил для закрытия
-    let modelClosedBtn = document.querySelector('[data-close]');
 
     //навешуем события при клике на показать
     modelBtn.forEach(btn => {
@@ -181,13 +179,11 @@ window.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     }
 
-    // при клике на крестик закрыть
-    modelClosedBtn.addEventListener('click', closeModal);
 
-    // при клике на подложку закрываем
+    // при клике на подложку закрываем а также если есть атрибут data-close у элемента то тоже закрываем
     modal.addEventListener('click', (event) => {
-        // проверяем что клик пользователя был именно на подложку
-        if(event.target === modal)
+        // проверяем что клик пользователя был именно на подложку или элемент с атрибутом
+        if(event.target === modal || event.target.getAttribute('data-close') == '')
         {
             closeModal();
         }
@@ -326,7 +322,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // создаем обьект с выводм статуса
     const message = 
     {
-        loading: 'Загрузка...',
+        loading: 'img/form/spinner.svg',
         success: 'Спасибо! Скоро мы с вами свяжемся',
         failure: 'Что-то пошло не так...'
     };
@@ -344,13 +340,18 @@ window.addEventListener('DOMContentLoaded', () => {
             // сообщаем что событие не обработанно
             event.preventDefault();
 
-            // создаем див куда будем выводить 
-            let statusMessage = document.createElement('div');
-            // добавляем класс
-            statusMessage.classList.add('status');
-            // выводим пользователю что сообщение
-            statusMessage.textContent = message.loading;
-            form.appendChild(statusMessage);
+            // создаем img куда будем выводить 
+            let statusMessage = document.createElement('img');
+            // добавляем путь картинки
+            statusMessage.src = message.loading;;
+            // добавляем стили картинке
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+
+            // вставляем после формы
+            form.insertAdjacentElement('afterend', statusMessage);
             
             // создаем обьект JSON
             const request = new XMLHttpRequest();
@@ -383,22 +384,55 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (request.status === 200) 
                 {
                     console.log(request.response);
-                    // выводи сообщение
-                    statusMessage.textContent = message.success;
+                    // ответ что удачно отправил
+                    showThanksModal(message.success);
+                    // удаляем собщение 
+                    statusMessage.remove();
                     // очищаем форму
                     form.reset();
-                    // выводим сообщение на 2 секунды
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 2000);
                 } 
                 else 
                 {
                     // если не успешен оповещаем
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
         });
+    }
+
+    // ф-я вывода ответа на запрос пользователю
+    function showThanksModal(message) {
+        // получаем модельное окно куда будем выводить
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        // добавляем класс скрыть
+        prevModalDialog.classList.add('hide');
+        // показываем окно
+        openModal();
+
+        // создаем элемент
+        const thanksModal = document.createElement('div');
+        // добавляем существующий класс
+        thanksModal.classList.add('modal__dialog');
+        // вставляем в этот элемент элемент с атрибутом закрытия
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+        // вставляем созданный элемент после
+        document.querySelector('.modal').append(thanksModal);
+        // ф-я изменения окна,удаляет о выводк отправке, делает окно прежним, и закрывает
+        setTimeout(() => {
+            // удаляем созданный элемент
+            thanksModal.remove();
+            // возращаем классы те что были
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            // закрываем окно
+            closeModal();
+        }, 4000);
     }
     /// AJAX end
 });
