@@ -314,4 +314,88 @@ window.addEventListener('DOMContentLoaded', () => {
         'menu__item'
     );
     //class Карточек мею end
+
+    // AJAX  start
+
+    // берем все формы с страницы в псевдомассив
+    const forms = document.querySelectorAll('form');
+    
+    // создаем обьект с выводм статуса
+    const message = 
+    {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    // достаем каждую форму из псевдомассива
+    forms.forEach(item => {
+        // вызов ф-и и передача форм
+        postData(item);
+    });
+
+    //  обработки форм
+    function postData(form) {
+        // при собитии отправить
+        form.addEventListener('submit', (event) => {
+            // сообщаем что событие не обработанно
+            event.preventDefault();
+
+            // создаем див куда будем выводить 
+            let statusMessage = document.createElement('div');
+            // добавляем класс
+            statusMessage.classList.add('status');
+            // выводим пользователю что сообщение
+            statusMessage.textContent = message.loading;
+            form.appendChild(statusMessage);
+            
+            // создаем обьект JSON
+            const request = new XMLHttpRequest();
+            // данные отправки
+            request.open('POST', 'server.php');
+            // HTTP заголовок передаем 
+            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            
+            // конструктор обьект с формами
+            const formData = new FormData(form);
+
+            // создаем обьект для превращения Конструктора FormData в JSON формат
+            const object = {};
+            
+            // перебираем обьект
+            formData.forEach(function(value, key){
+                object[key] = value;
+            });
+
+            // кнвертируем в JSON
+            const json = JSON.stringify(object);
+
+            // отправляем на сервер
+            request.send(json);
+
+            // проверяем ответ сервера
+            request.addEventListener('load', () => {
+                
+                // если успешен
+                if (request.status === 200) 
+                {
+                    console.log(request.response);
+                    // выводи сообщение
+                    statusMessage.textContent = message.success;
+                    // очищаем форму
+                    form.reset();
+                    // выводим сообщение на 2 секунды
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                } 
+                else 
+                {
+                    // если не успешен оповещаем
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
+    /// AJAX end
 });
