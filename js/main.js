@@ -353,13 +353,6 @@ window.addEventListener('DOMContentLoaded', () => {
             // вставляем после формы
             form.insertAdjacentElement('afterend', statusMessage);
             
-            // создаем обьект JSON
-            const request = new XMLHttpRequest();
-            // данные отправки
-            request.open('POST', '/server.php');
-            // HTTP заголовок передаем 
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-            
             // конструктор обьект с формами
             const formData = new FormData(form);
             
@@ -370,32 +363,34 @@ window.addEventListener('DOMContentLoaded', () => {
             formData.forEach(function(value, key){
                 ob[key] = value;
             });
-            
-            // кнвертируем в JSON
-            const jn = JSON.stringify(ob);
-
-            // отправляем на сервер
-            request.send('jn');
-            
-            // проверяем ответ сервера
-            request.addEventListener('load', () => {
-                
-                // если успешен
-                if (request.status === 200) 
-                {
-                    console.log(request.response);
-                    // ответ что удачно отправил
-                    showThanksModal(message.success);
-                    // удаляем собщение 
-                    statusMessage.remove();
-                    // очищаем форму
-                    form.reset();
-                } 
-                else 
-                {
-                    // если не успешен оповещаем
-                    showThanksModal(message.failure);
-                }
+             
+            // оправляем данные на сервер через fetch с помощью промиса 
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ob)
+            })
+            // конвертируем json формат в текст
+            .then(data => data.text())
+            // обрабатываем промис в случае успеха
+            .then(data => {
+                console.log(data);
+                // ответ что удачно отправил
+                showThanksModal(message.success);
+                // удаляем собщение
+                statusMessage.remove();
+            })
+            // обрабатываем промис в случае неудачи
+            .catch(() => {
+                // если не успешен оповещаем
+                showThanksModal(message.failure);
+            })
+            // после выпонения одного из результатов
+            .finally(() => {
+                // очищаем форму
+                form.reset();
             });
         });
     }
